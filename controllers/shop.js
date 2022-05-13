@@ -8,7 +8,6 @@ exports.getIndex = (req, res, next) => {
         prods: products,
         pageTitle: "Shop",
         path: "/",
-        isLoggedIn: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -21,7 +20,6 @@ exports.getProducts = (req, res, next) => {
         prods: products,
         pageTitle: "All Products",
         path: "/products",
-        isLoggedIn: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -38,7 +36,6 @@ exports.getProduct = (req, res, next) => {
         product: product,
         pageTitle: product.title,
         path: "/products",
-        isLoggedIn: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -53,7 +50,18 @@ exports.getCart = (req, res, next) => {
         path: "/cart",
         pageTitle: "Your Cart",
         products: products,
-        isLoggedIn: req.session.isLoggedIn,
+      });
+    })
+    .catch((err) => console.log(err));
+};
+
+exports.getOrders = (req, res, next) => {
+  Order.find({ "user.userId": req.user._id })
+    .then((orders) => {
+      res.render("shop/orders", {
+        path: "/orders",
+        pageTitle: "Your Orders",
+        orders: orders,
       });
     })
     .catch((err) => console.log(err));
@@ -88,7 +96,7 @@ exports.postOrders = (req, res, next) => {
       });
       const order = new Order({
         user: {
-          username: req.user.username,
+          email: req.user.email,
           userId: req.user._id,
         },
         products: products,
@@ -99,18 +107,5 @@ exports.postOrders = (req, res, next) => {
       return req.user.clearCart();
     })
     .then((result) => res.redirect("/orders"))
-    .catch((err) => console.log(err));
-};
-
-exports.getOrders = (req, res, next) => {
-  Order.find({ "user.userId": req.user._id })
-    .then((orders) => {
-      res.render("shop/orders", {
-        path: "/orders",
-        pageTitle: "Your Orders",
-        orders: orders,
-        isLoggedIn: req.session.isLoggedIn,
-      });
-    })
     .catch((err) => console.log(err));
 };
