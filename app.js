@@ -1,9 +1,6 @@
 const path = require("path");
-
 const express = require("express");
 const bodyParser = require("body-parser");
-
-const errorController = require("./controllers/error");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
@@ -14,6 +11,7 @@ const User = require("./models/user");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
+const errorController = require("./controllers/error");
 
 const MONGODB_URI =
   "mongodb+srv://Shiyu:Dayu19990519@cluster0.oehei.mongodb.net/shop?retryWrites=true&w=majority";
