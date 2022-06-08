@@ -20,7 +20,6 @@ router.post(
       .isString()
       .isLength({ min: 3 })
       .withMessage("Title of a product has to contain at least 3 characters"),
-    body("imageUrl").isURL().withMessage("Please enter a valid URL"),
     body("price")
       .isNumeric()
       .withMessage("Price of a product has to be a number"),
@@ -43,7 +42,6 @@ router.post(
       .isString()
       .isLength({ min: 3 })
       .withMessage("Title of a product has to contain at least 3 characters"),
-    body("imageUrl").isURL().withMessage("Please enter a valid URL"),
     body("price")
       .isNumeric()
       .withMessage("Price of a product has to be a number"),

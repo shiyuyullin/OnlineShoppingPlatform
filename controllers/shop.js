@@ -1,3 +1,6 @@
+const fs = require("fs");
+const path = require("path");
+const PDFDocument = require("pdfkit");
 const Product = require("../models/product");
 const Order = require("../models/order");
 
@@ -131,6 +134,43 @@ exports.postOrders = (req, res, next) => {
       return req.user.clearCart();
     })
     .then((result) => res.redirect("/orders"))
+    .catch((err) => {
+      const error = new Error(err);
+      error.HttpStatusCode = 500;
+      return next(error);
+    });
+};
+
+exports.getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+  const invoiceName = "invoice-" + orderId + ".pdf";
+  const invoicePath = path.join("data", "invoices", invoiceName);
+  Order.findById(orderId)
+    .then((order) => {
+      if (!order) {
+        return next(new Error("No order found"));
+      }
+      const invoice = new PDFDocument();
+      invoice.pipe(fs.createWriteStream(invoicePath));
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        'inline; filename="' + invoiceName + '"'
+      );
+      invoice.pipe(res);
+      invoice.fontSize(26).text("Invoice");
+      let total = 0;
+      order.products.forEach((product) => {
+        total += product.quantity * product.product.price;
+        invoice
+          .fontSize(14)
+          .text(
+            `${product.product.title} - ${product.quantity} x $${product.product.price}`
+          );
+      });
+      invoice.text(`Total price: $${total}`);
+      invoice.end();
+    })
     .catch((err) => {
       const error = new Error(err);
       error.HttpStatusCode = 500;
